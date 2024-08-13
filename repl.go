@@ -53,6 +53,9 @@ func read(scanner *bufio.Scanner, ch chan cliCommand) {
 		input := scanner.Text()
 		if command := commands[input]; command.name != "" {
 			ch <- command
+		} else {
+			fmt.Println("Invalid command")
+			fmt.Print("Pokecli > ")
 		}
 	}
 }
@@ -67,7 +70,10 @@ func repl() {
 
 	for {
 		if command := <-ch; command.name != "" {
-			command.callback()
+			err  := command.callback()
+			if err != nil {
+				fmt.Println(err)
+			}
 			fmt.Print("Pokecli > ")
 		}
 	}
