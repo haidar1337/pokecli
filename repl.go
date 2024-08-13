@@ -27,6 +27,18 @@ func getCommands() map[string]cliCommand {
 				description: "Exits the program",
 				callback: commandExit,
 			},
+			"map":
+			{
+				name: "map",
+				description: "Display the next 20 locations in the world of Pokemon",
+				callback: commandMap,
+			},
+			"mapb":
+			{
+				name: "mapb",
+				description: "Display the previous 20 locations in the world of Pokemon",
+				callback: commandMapb,
+			},
 	}
 
 	return commands
