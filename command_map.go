@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/haidar1337/pokecli/internal/api"
 )
 
