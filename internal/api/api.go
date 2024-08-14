@@ -23,6 +23,19 @@ type LocationArea struct {
 	Results []Result
 }
 
+type General struct {
+	PokemonEncounters `json:"pokemon_encounters"`
+}
+
+type PokemonEncounters []struct {
+	Pokemon Pokemon `json:"pokemon"`
+}
+
+type Pokemon struct {
+	Name string `json:"name"`
+}
+
+
 var cache = pokecache.NewCache(time.Minute * 5)
 
 func FetchNextTwentyLocations(config *Config) ([]Result, error) {
@@ -55,7 +68,6 @@ func FetchNextTwentyLocations(config *Config) ([]Result, error) {
 		if err != nil {
 			return nil, err
 		}
-
 		err = json.Unmarshal(body, &locationArea)
 		if err != nil {
 			return nil, err
@@ -115,7 +127,38 @@ func FetchPreviousTwentyLocations(config *Config) ([]Result, error) {
 	return results, nil
 }
 
-func setConfig(next *string, prev *string) {
-	setNext(next)
-	setPrev(prev)
+func FetchPokemonsArea(s string) (PokemonEncounters, error) {
+	url := baseUrl + "/location-area/" + s
+
+	val, ok := cache.Get(url)
+	if ok {
+		general := General{}
+		if err := json.Unmarshal(val, &general); err == nil {
+			return general.PokemonEncounters, nil
+		}
+	}
+
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := io.ReadAll(res.Body)
+	defer res.Body.Close()
+	if res.StatusCode >= 300 {
+		errorMessage := fmt.Sprintf("Response failed with status code: %d", res.StatusCode)
+		return nil, errors.New(errorMessage)
+	}
+	if err != nil {
+		return nil, err
+	}
+	
+	pokemonEncounters := General{}
+	if err := json.Unmarshal(body, &pokemonEncounters); err != nil {
+		return nil, err
+	}
+
+	cache.Add(url, body)
+
+	return pokemonEncounters.PokemonEncounters, nil
 }

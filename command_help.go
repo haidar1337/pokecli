@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func commandHelp() error {
+func commandHelp(args ...string) error {
 	helpString :=  "Welcome to the Pokedex!\nUsage:\n\n"
 
 	commands := getCommands()

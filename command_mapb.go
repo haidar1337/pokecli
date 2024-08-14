@@ -6,7 +6,7 @@ import (
 	"github.com/haidar1337/pokecli/internal/api"
 )
 
-func commandMapb() error {
+func commandMapb(args ...string) error {
 	config := api.GetConfig()
 	results, err := api.FetchPreviousTwentyLocations(&config)
 

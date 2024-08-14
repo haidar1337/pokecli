@@ -22,3 +22,9 @@ func setNext(n *string) {
 func setPrev(p *string) {
 	config.Previous = p
 }
+
+
+func setConfig(next *string, prev *string) {
+	setNext(next)
+	setPrev(prev)
+}

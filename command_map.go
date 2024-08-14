@@ -6,7 +6,7 @@ import (
 	"github.com/haidar1337/pokecli/internal/api"
 )
 
-func commandMap() error {
+func commandMap(args ...string) error {
 	config := api.GetConfig()
 	results, err := api.FetchNextTwentyLocations(&config)
 

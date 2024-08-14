@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type cliCommand struct {
 	name string
 	description string
-	callback func() error
+	callback func(...string) error
 }
 
 
@@ -39,42 +40,45 @@ func getCommands() map[string]cliCommand {
 				description: "Display the previous 20 locations in the world of Pokemon",
 				callback: commandMapb,
 			},
+			"explore":
+			{
+				name: "explore",
+				description: "Explore Pokemons in a certain area of the world of Pokemon. explore <area_name>",
+				callback: commandExplore,
+			},
 	}
 
 	return commands
 }
 
 
-func read(scanner *bufio.Scanner, ch chan cliCommand) {
-	for {
-		commands := getCommands()
-	
-		scanner.Scan()
-		input := scanner.Text()
-		if command := commands[input]; command.name != "" {
-			ch <- command
-		} else {
-			fmt.Println("Invalid command")
-			fmt.Print("Pokecli > ")
-		}
-	}
+func cleanInput(text string) []string {
+	output := strings.ToLower(text)
+	words := strings.Fields(output)
+	return words
 }
 
 func repl() {
 	scanner := bufio.NewScanner(os.Stdin)
-	ch := make(chan cliCommand)
-
-	fmt.Print("Pokecli > ")
-
-	go read(scanner, ch)
+	commands := getCommands()
 
 	for {
-		if command := <-ch; command.name != "" {
-			err  := command.callback()
-			if err != nil {
-				fmt.Println(err)
-			}
-			fmt.Print("Pokecli > ")
+		fmt.Print("Pokecli > ")
+		scanner.Scan()
+
+		input := cleanInput(scanner.Text())
+		command, ok := commands[input[0]]
+		if !ok {
+			fmt.Println("Invalid command")
+			continue
+		}
+		args := []string{}
+		if len(input) > 1 {
+			args = input[1:]
+		}
+
+		if err := command.callback(args...); err != nil {
+			fmt.Println(err)
 		}
 	}
 }
