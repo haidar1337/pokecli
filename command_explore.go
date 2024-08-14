@@ -9,7 +9,7 @@ import (
 
 func commandExplore(args ...string) error {
 	if len(args) != 1 {
-		return errors.New("An explore command requires an argument. Usage: explore <area_name>.")
+		return errors.New("An explore command requires an argument. Usage: explore <area_name>")
 	}
 	pokemons, err := api.FetchPokemonsArea(args[0])
 	if err != nil {
